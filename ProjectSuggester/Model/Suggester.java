@@ -1,4 +1,6 @@
-package ProjectSuggester;
+package ProjectSuggester.Model;
+
+import ProjectSuggester.Model.Company;
 
 public class Suggester {
 	private final String suggesterName;

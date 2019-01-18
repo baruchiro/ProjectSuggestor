@@ -1,5 +1,7 @@
 package ProjectSuggester;
 
+import ProjectSuggester.Model.Project;
+
 import java.util.ArrayList;
 import java.util.List;
 

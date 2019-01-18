@@ -1,4 +1,9 @@
-package ProjectSuggester;
+package ProjectSuggester.Controllers;
+
+import ProjectSuggester.DB;
+import ProjectSuggester.Model.Company;
+import ProjectSuggester.Model.Project;
+import ProjectSuggester.Model.Suggester;
 
 import java.time.Duration;
 import java.util.NoSuchElementException;
@@ -6,8 +11,23 @@ import java.util.NoSuchElementException;
 public class ProjectsController {
 
 
+    private final LoginController loginController;
+    private final UsersController usersController;
+
+    public ProjectsController() {
+        this(new LoginController(), new UsersController());
+    }
+
+    public ProjectsController(LoginController loginController) {
+        this(loginController, new UsersController());
+    }
+
+    public ProjectsController(LoginController loginController, UsersController usersController) {
+        this.loginController = loginController;
+        this.usersController = usersController;
+    }
+
     public int Add(String projectName, String projectDescription, Duration hours, String suggesterName, String suggesterMail, String suggesterPhone, String suggesterCompany) {
-        var t = new LoginController().isLogin(1);
         var id = -1;
         if (DB.getInstance().projects.size() == 0) {
             id = 1;
@@ -18,8 +38,8 @@ public class ProjectsController {
 
         var company = new Company(suggesterCompany);
         var suggester = new Suggester(suggesterName, suggesterMail, suggesterPhone, company);
-        var project = new Project(id, projectName, projectDescription, hours, suggester);
-        DB.getInstance().projects.add(project);
+        var project = new Project(projectName, projectDescription, hours, suggester);
+        DB.getInstance().addProject(project);
         return id;
     }
 

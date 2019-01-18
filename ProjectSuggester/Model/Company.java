@@ -1,4 +1,4 @@
-package ProjectSuggester;
+package ProjectSuggester.Model;
 
 public class Company {
     private final String companyName;

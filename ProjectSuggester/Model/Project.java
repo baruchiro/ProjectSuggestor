@@ -1,4 +1,6 @@
-package ProjectSuggester;
+package ProjectSuggester.Model;
+
+import ProjectSuggester.Validators;
 
 import java.time.Duration;
 
@@ -11,19 +13,18 @@ public class Project {
     private int id;
     private Status status;
 
-    public Project(int id, String projectName, String projectDescription, Duration hours, Suggester suggester) {
+    public Project(String projectName, String projectDescription, Duration hours, Suggester suggester) {
         this.projectName = projectName;
         this.projectDescription = projectDescription;
         this.hours = hours;
         this.suggester = suggester;
-        this.id = id;
         this.status = Status.InCheck;
+        this.id = -1;
         validate();
     }
 
     private void validate() {
-        if (id <= 0 ||
-                isNullOrEmpty(projectName) ||
+        if (isNullOrEmpty(projectName) ||
                 isNullOrEmpty(projectDescription) ||
                 hours == null ||
                 hours.compareTo(Duration.ofHours(300)) > 0 ||
@@ -54,6 +55,12 @@ public class Project {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        if (this.id > 0) throw new UnsupportedOperationException("id is already set");
+        Validators.Throw.NotPositive(id);
+        this.id = id;
     }
 
     public Status getStatus() {

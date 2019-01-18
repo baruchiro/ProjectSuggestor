@@ -1,8 +1,8 @@
 package UnitTests;
 
-import ProjectSuggester.Company;
-import ProjectSuggester.Project;
-import ProjectSuggester.Suggester;
+import ProjectSuggester.Model.Company;
+import ProjectSuggester.Model.Project;
+import ProjectSuggester.Model.Suggester;
 import com.github.javafaker.Faker;
 
 import java.time.Duration;

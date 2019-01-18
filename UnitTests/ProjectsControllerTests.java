@@ -1,17 +1,13 @@
 package UnitTests;
 
-import ProjectSuggester.LoginController;
-import ProjectSuggester.Project;
-import ProjectSuggester.ProjectsController;
+import ProjectSuggester.Exceptions.UserNotConnectedException;
+import ProjectSuggester.Controllers.LoginController;
+import ProjectSuggester.Model.Project;
+import ProjectSuggester.Controllers.ProjectsController;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.security.InvalidKeyException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,14 +15,17 @@ import static org.mockito.Mockito.when;
 public class ProjectsControllerTests {
     private ProjectsController ProjectsController;
 
+
     @Before
     public void Init() {
-        this.ProjectsController = new ProjectsController();
-        whenNew()
+        var loginController = mock(LoginController.class);
+        when(loginController.isLogin(anyInt())).thenReturn(true);
+
+        this.ProjectsController = new ProjectsController(loginController);
     }
 
     @Test
-    public void AddProject_GoodData_GetResultID() throws InvalidKeyException {
+    public void AddProject_GoodData_GetResultID() {
 
         int id = AddProject();
         assertTrue("The id:" + id + " must be equal or great from 0",
@@ -67,5 +66,28 @@ public class ProjectsControllerTests {
         var status = ProjectsController.GetStatus(id);
         assertEquals(Project.Status.Reject, status);
 
+    }
+
+    @Test
+    public void AddProject_UserNotConnected_ThrowException() {
+        var loginController = mock(LoginController.class);
+        when(loginController.isLogin(anyInt())).thenReturn(false);
+
+        var projectController = new ProjectsController(loginController);
+
+        try {
+            var builder = ProjectBuilder.LoadDefaults();
+            projectController.Add(
+                    builder.getProjectName(),
+                    builder.getProjectDescription(),
+                    builder.getHours(),
+                    builder.getSuggesterName(),
+                    builder.getSuggesterMail(),
+                    builder.getSuggesterPhone(),
+                    builder.getSuggesterCompany()
+            );
+            fail("Should throw UserNotConnected");
+        } catch (UserNotConnectedException ignored) {
+        }
     }
 }
