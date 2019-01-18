@@ -9,7 +9,7 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Random;
 
-public class ProjectBuilder {
+public class ProjectBuilder implements DtoBuilder<Project> {
     private String suggesterCompany;
     private String suggesterPhone;
     private String suggesterName;
@@ -23,7 +23,7 @@ public class ProjectBuilder {
     private ProjectBuilder() {
         Faker faker = new Faker(Locale.forLanguageTag("he"));
 
-        id = new Random().nextInt();
+        id = new Random().nextInt(Integer.MAX_VALUE);
         projectName = faker.app().name();
         projectDescription = faker.harryPotter().quote();
         hours = Duration.ofHours(250);

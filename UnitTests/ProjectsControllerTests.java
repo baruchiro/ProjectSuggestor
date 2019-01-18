@@ -1,5 +1,6 @@
 package UnitTests;
 
+import ProjectSuggester.LoginController;
 import ProjectSuggester.Project;
 import ProjectSuggester.ProjectsController;
 import org.junit.Before;
@@ -9,6 +10,11 @@ import java.security.InvalidKeyException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ProjectsControllerTests {
     private ProjectsController ProjectsController;
@@ -16,6 +22,7 @@ public class ProjectsControllerTests {
     @Before
     public void Init() {
         this.ProjectsController = new ProjectsController();
+        whenNew()
     }
 
     @Test
@@ -47,7 +54,7 @@ public class ProjectsControllerTests {
 
         // validate
         var status = ProjectsController.GetStatus(id);
-        assertEquals("Just added project status must be " + Project.Status.InCheck + " but found " + status, Project.Status.InCheck, status);
+        assertEquals("Just added project with id:" + id + " status must be " + Project.Status.InCheck + " but found " + status, Project.Status.InCheck, status);
     }
 
     @Test

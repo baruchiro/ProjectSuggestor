@@ -2,6 +2,7 @@ package ProjectSuggester;
 
 import java.time.Duration;
 
+
 public class Project {
     private final String projectName;
     private final String projectDescription;
@@ -17,6 +18,22 @@ public class Project {
         this.suggester = suggester;
         this.id = id;
         this.status = Status.InCheck;
+        validate();
+    }
+
+    private void validate() {
+        if (id <= 0 ||
+                isNullOrEmpty(projectName) ||
+                isNullOrEmpty(projectDescription) ||
+                hours == null ||
+                hours.compareTo(Duration.ofHours(300)) > 0 ||
+                hours.compareTo(Duration.ofHours(200)) < 0
+        )
+            throw new IllegalArgumentException();
+    }
+
+    private boolean isNullOrEmpty(String string) {
+        return string == null || string.isEmpty() || string.isBlank();
     }
 
     public String getProjectName() {

@@ -7,12 +7,13 @@ public class ProjectsController {
 
 
     public int Add(String projectName, String projectDescription, Duration hours, String suggesterName, String suggesterMail, String suggesterPhone, String suggesterCompany) {
+        var t = new LoginController().isLogin(1);
         var id = -1;
         if (DB.getInstance().projects.size() == 0) {
             id = 1;
         } else {
             var max = DB.getInstance().projects.stream().map(Project::getId).max(Integer::compareTo);
-            id = max.get();
+            id = max.get() + 1;
         }
 
         var company = new Company(suggesterCompany);
