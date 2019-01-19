@@ -4,7 +4,10 @@ import ProjectSuggester.Model.Model;
 import ProjectSuggester.Model.Project;
 import ProjectSuggester.Model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public class DB {
@@ -43,8 +46,8 @@ public class DB {
         return first.get();
     }
 
-    public User getUserByMail(String mail) {
-        var first = users.stream().filter(user -> user.getMail().equals(mail)).findFirst();
+    public User getUser(String username) {
+        var first = users.stream().filter(user -> user.getUsername().equals(username)).findFirst();
         if (first.isEmpty()) {
             throw new NoSuchElementException();
         }

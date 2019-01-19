@@ -41,6 +41,7 @@ public class ProjectsControllerTests {
     private int AddProject() {
         var builder = ProjectBuilder.LoadDefaults();
         return ProjectsController.Add(
+                builder.getSuggesterMail(),
                 builder.getProjectName(),
                 builder.getProjectDescription(),
                 builder.getHours(),
@@ -76,6 +77,7 @@ public class ProjectsControllerTests {
     public void AddProject_WithoutCompany_ShouldPass() {
         var builder = ProjectBuilder.LoadDefaults();
         var id = ProjectsController.Add(
+                builder.getSuggesterMail(),
                 builder.getProjectName(),
                 builder.getProjectDescription(),
                 builder.getHours(),
@@ -97,6 +99,7 @@ public class ProjectsControllerTests {
         try {
             var builder = ProjectBuilder.LoadDefaults();
             projectController.Add(
+                    builder.getSuggesterMail(),
                     builder.getProjectName(),
                     builder.getProjectDescription(),
                     builder.getHours(),
@@ -133,11 +136,12 @@ public class ProjectsControllerTests {
 
         try {
             ProjectsController.Add(
+                    builder.getSuggesterMail(),
                     projectName,
                     builder.getProjectDescription(),
                     builder.getHours(),
                     builder.getSuggesterName(),
-                    suggester.getMail(),
+                    suggester.getUsername(),
                     builder.getSuggesterPhone(),
                     builder.getSuggesterCompany()
             );
@@ -147,6 +151,7 @@ public class ProjectsControllerTests {
 
         try {
             ProjectsController.Add(
+                    builder.getSuggesterMail(),
                     projectName,
                     builder.getProjectDescription(),
                     builder.getHours(),
@@ -169,10 +174,11 @@ public class ProjectsControllerTests {
         // Validate
         Faker faker = new Faker(Locale.forLanguageTag("he"));
 
-        var registrationID = ProjectsController.Register(
+        var stuentt1 = faker.idNumber().valid();
+        var registrationID = ProjectsController.Register(stuentt1,
                 projectId,
                 faker.name().fullName(),
-                faker.idNumber().valid(),
+                stuentt1,
                 faker.idNumber().valid()
         );
         assertNotNull(registrationID);
@@ -191,29 +197,29 @@ public class ProjectsControllerTests {
         // Validate
         try {
             Faker faker = new Faker(Locale.forLanguageTag("he"));
-
-            projectController.Register(
+            var student1 = faker.idNumber().valid();
+            projectController.Register(student1,
                     projectId,
                     faker.name().fullName(),
-                    faker.idNumber().valid(),
+                    student1,
                     faker.idNumber().valid()
             );
             fail("Should throw UserNotConnected");
-        } catch (UserNotConnectedException  ignored) {
+        } catch (UserNotConnectedException ignored) {
         }
     }
 
     @Test
-    public void Register_OneStudent_ShouldFail(){
+    public void Register_OneStudent_ShouldFail() {
         var projectId = AddProject();
 
         try {
             Faker faker = new Faker(Locale.forLanguageTag("he"));
-
-            ProjectsController.Register(
+            var student1 = faker.idNumber().valid();
+            ProjectsController.Register(student1,
                     projectId,
                     faker.name().fullName(),
-                    faker.idNumber().valid()
+                    student1
             );
             fail("Should throw UserNotConnected");
         } catch (IllegalArgumentException ignored) {
@@ -221,7 +227,7 @@ public class ProjectsControllerTests {
     }
 
     @Test
-    public void Register_MentorAlreadyRegisterToProject_ShouldFail(){
+    public void Register_MentorAlreadyRegisterToProject_ShouldFail() {
         // init
         Faker faker = new Faker(Locale.forLanguageTag("he"));
 
@@ -229,19 +235,21 @@ public class ProjectsControllerTests {
         var projectId = AddProject();
         ProjectsController.RegisterMentor(projectId, mentorName);
 
-        ProjectsController.Register(
+        var student1 = faker.idNumber().valid();
+        ProjectsController.Register(student1,
                 projectId,
                 mentorName,
-                faker.idNumber().valid(),
+                student1,
                 faker.idNumber().valid()
         );
 
         try {
+            var student2 = faker.idNumber().valid();
 
-            ProjectsController.Register(
+            ProjectsController.Register(student2,
                     projectId,
                     mentorName + faker.name().fullName(),
-                    faker.idNumber().valid(),
+                    student2,
                     faker.idNumber().valid()
             );
             fail("Should throw UserNotConnected");
@@ -250,26 +258,28 @@ public class ProjectsControllerTests {
     }
 
     @Test
-    public void Register_StudentsAlreadyRegistered_ShouldFail(){
+    public void Register_StudentsAlreadyRegistered_ShouldFail() {
         Faker faker = new Faker(Locale.forLanguageTag("he"));
 
         var projectId = AddProject();
         var mentorName = faker.name().fullName();
 
+        var student1 = faker.idNumber().valid();
 
-        ProjectsController.Register(
+        ProjectsController.Register(student1,
                 projectId,
                 mentorName,
-                faker.idNumber().valid(),
+                student1,
                 faker.idNumber().valid()
         );
 
         try {
+            var student2 = faker.idNumber().valid();
 
-            ProjectsController.Register(
+            ProjectsController.Register(student2,
                     projectId,
                     mentorName,
-                    faker.idNumber().valid(),
+                    student2,
                     faker.idNumber().valid()
             );
             fail("Should fail");

@@ -29,12 +29,12 @@ public class ProjectsController {
         this.usersController = usersController;
     }
 
-    public int Add(String projectName, String projectDescription, Duration hours, String suggesterName, String suggesterMail, String suggesterPhone, String suggesterCompany) {
-        if (!loginController.isLogin(suggesterMail)) throw new UserNotConnectedException();
+    public int Add(String user, String projectName, String projectDescription, Duration hours, String suggesterName, String suggesterMail, String suggesterPhone, String suggesterCompany) {
+        if (!loginController.isLogin(user)) throw new UserNotConnectedException();
 
         var sameNameSuggesterYear = DB.getInstance().getProjectsByName(projectName)
                 .filter(project ->
-                        project.getSuggester().getMail().equals(suggesterMail) || project.getSuggester().getCompany().getName().equals(suggesterCompany))
+                        project.getSuggester().getUsername().equals(suggesterMail) || project.getSuggester().getCompany().getName().equals(suggesterCompany))
                 .anyMatch(project -> project.getCreationDate().get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR));
         if (sameNameSuggesterYear) throw new IllegalArgumentException("Same name suggester year");
 
@@ -64,9 +64,9 @@ public class ProjectsController {
         return DB.getInstance().getProjectById(id).getProjectName();
     }
 
-    public UUID Register(int projectId, String mentorName, String... students) {
+    public UUID Register(String username, int projectId, String mentorName, String... students) {
         if (students.length < 2) throw new IllegalArgumentException("Must 2 students or more");
-        if (!loginController.isLogin(students[0])) throw new UserNotConnectedException();
+        if (!loginController.isLogin(username)) throw new UserNotConnectedException();
 
 
         var project = DB.getInstance().getProjectById(projectId);
