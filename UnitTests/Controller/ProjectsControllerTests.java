@@ -1,14 +1,17 @@
-package UnitTests;
+package UnitTests.Controller;
 
-import ProjectSuggester.Exceptions.UserNotConnectedException;
 import ProjectSuggester.Controllers.LoginController;
-import ProjectSuggester.Model.Project;
 import ProjectSuggester.Controllers.ProjectsController;
+import ProjectSuggester.Exceptions.UserNotConnectedException;
+import ProjectSuggester.Model.Project;
+import UnitTests.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -19,7 +22,7 @@ public class ProjectsControllerTests {
     @Before
     public void Init() {
         var loginController = mock(LoginController.class);
-        when(loginController.isLogin(anyInt())).thenReturn(true);
+        when(loginController.isLogin(anyString())).thenReturn(true);
 
         this.ProjectsController = new ProjectsController(loginController);
     }
@@ -65,13 +68,27 @@ public class ProjectsControllerTests {
         // validate
         var status = ProjectsController.GetStatus(id);
         assertEquals(Project.Status.Reject, status);
+    }
 
+    @Test
+    public void AddProject_WithoutCompany_ShouldPass() {
+        var builder = ProjectBuilder.LoadDefaults();
+        var id = ProjectsController.Add(
+                builder.getProjectName(),
+                builder.getProjectDescription(),
+                builder.getHours(),
+                builder.getSuggesterName(),
+                builder.getSuggesterMail(),
+                builder.getSuggesterPhone(),
+                null
+        );
+        assertTrue(id > 0);
     }
 
     @Test
     public void AddProject_UserNotConnected_ThrowException() {
         var loginController = mock(LoginController.class);
-        when(loginController.isLogin(anyInt())).thenReturn(false);
+        when(loginController.isLogin(anyString())).thenReturn(false);
 
         var projectController = new ProjectsController(loginController);
 
@@ -87,7 +104,59 @@ public class ProjectsControllerTests {
                     builder.getSuggesterCompany()
             );
             fail("Should throw UserNotConnected");
-        } catch (UserNotConnectedException ignored) {
+        } catch (UserNotConnectedException | NoSuchElementException ignored) {
         }
+    }
+
+    @Test
+    public void AddProject_CreationTime_ShouldAdded() {
+        // init
+        var id = AddProject();
+
+        // Validate
+        var date = ProjectsController.GetCreationDate(id);
+        assertNotNull(date);
+    }
+
+    @Test
+    public void AddProject_SameNameYearSuggester_ShouldFail() {
+        // Init
+        var id = AddProject();
+        var year = ProjectsController.GetCreationDate(id);
+        var projectName = ProjectsController.GetProjectName(id);
+        var suggester = ProjectsController.GetSuggesterForProject(id);
+
+        // Validate
+        var builder = ProjectBuilder.LoadDefaults();
+
+        try {
+            ProjectsController.Add(
+                    projectName,
+                    builder.getProjectDescription(),
+                    builder.getHours(),
+                    builder.getSuggesterName(),
+                    suggester.getMail(),
+                    builder.getSuggesterPhone(),
+                    builder.getSuggesterCompany()
+            );
+            fail("This should fail");
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        try {
+            ProjectsController.Add(
+                    projectName,
+                    builder.getProjectDescription(),
+                    builder.getHours(),
+                    builder.getSuggesterName(),
+                    builder.getSuggesterMail(),
+                    builder.getSuggesterPhone(),
+                    suggester.getCompany().getName()
+            );
+            fail("This should fail");
+        }catch (IllegalArgumentException ignored){
+        }
+
+
     }
 }

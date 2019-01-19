@@ -6,4 +6,8 @@ public class Company {
     public Company(String companyName) {
         this.companyName = companyName;
     }
+
+    public String getName() {
+        return this.companyName;
+    }
 }

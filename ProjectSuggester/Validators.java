@@ -1,5 +1,7 @@
 package ProjectSuggester;
 
+import java.util.Calendar;
+
 public class Validators {
     public static Validators Throw = new Validators(true);
     public static Validators Validate = new Validators(false);
@@ -14,7 +16,15 @@ public class Validators {
         if (id <= 0) {
             if (isThrow)
                 throw new IllegalArgumentException();
-            else return false;
+            return false;
+        }
+        return true;
+    }
+
+    public boolean NotFuture(Calendar calendar) {
+        if (calendar.after(calendar)) {
+            if (isThrow) throw new IllegalArgumentException();
+            return false;
         }
         return true;
     }

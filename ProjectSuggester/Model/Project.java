@@ -3,15 +3,17 @@ package ProjectSuggester.Model;
 import ProjectSuggester.Validators;
 
 import java.time.Duration;
+import java.util.Calendar;
 
 
-public class Project {
+public class Project implements Model {
     private final String projectName;
     private final String projectDescription;
     private final Duration hours;
     private final Suggester suggester;
     private int id;
     private Status status;
+    private Calendar creationDate;
 
     public Project(String projectName, String projectDescription, Duration hours, Suggester suggester) {
         this.projectName = projectName;
@@ -69,6 +71,16 @@ public class Project {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Calendar getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Calendar creationDate) {
+        if (this.creationDate != null) throw new UnsupportedOperationException("creationDate is already set");
+        Validators.Throw.NotFuture(creationDate);
+        this.creationDate = creationDate;
     }
 
     public enum Status {Reject, InCheck}

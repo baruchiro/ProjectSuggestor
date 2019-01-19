@@ -1,17 +1,20 @@
 package ProjectSuggester.Model;
 
-import ProjectSuggester.Model.Company;
+public class Suggester extends User {
+    private final String suggesterName;
 
-public class Suggester {
-	private final String suggesterName;
-	private final String mail;
-	private final Company company;
+    private final Company company;
     private final String phone;
 
     public Suggester(String suggesterName, String mail, String suggesterPhone, Company company) {
-		this.suggesterName = suggesterName;
-		this.mail = mail;
-		this.phone = suggesterPhone;
-		this.company = company;
-	}
+        super(mail);
+        this.suggesterName = suggesterName;
+
+        this.phone = suggesterPhone;
+        this.company = company;
+    }
+
+    public Company getCompany() {
+        return this.company;
+    }
 }

@@ -19,6 +19,7 @@ public class ProjectBuilder implements DtoBuilder<Project> {
     private int id;
     private Project.Status status;
     private String suggesterMail;
+    private boolean isCompany;
 
     private ProjectBuilder() {
         Faker faker = new Faker(Locale.forLanguageTag("he"));
@@ -31,6 +32,7 @@ public class ProjectBuilder implements DtoBuilder<Project> {
         suggesterName = faker.internet().emailAddress();
         suggesterPhone = faker.phoneNumber().phoneNumber();
         suggesterCompany = faker.company().name();
+        isCompany = true;
         suggesterMail = faker.internet().emailAddress();
     }
 
@@ -118,6 +120,14 @@ public class ProjectBuilder implements DtoBuilder<Project> {
     }
 
     public Project Build() {
-        return new Project(id, projectName, projectDescription, hours, new Suggester(suggesterName, suggesterMail, suggesterPhone, new Company(suggesterCompany)));
+        var company = isCompany ? new Company(suggesterCompany) : null;
+        var project = new Project(projectName, projectDescription, hours, new Suggester(suggesterName, suggesterMail, suggesterPhone, company));
+        project.setId(id);
+        return project;
+    }
+
+    public ProjectBuilder withoutCompany() {
+        this.isCompany = false;
+        return this;
     }
 }

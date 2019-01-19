@@ -1,12 +1,13 @@
 package ProjectSuggester.Controllers;
 
 import ProjectSuggester.DB;
+import ProjectSuggester.Exceptions.UserNotConnectedException;
 import ProjectSuggester.Model.Company;
 import ProjectSuggester.Model.Project;
 import ProjectSuggester.Model.Suggester;
 
 import java.time.Duration;
-import java.util.NoSuchElementException;
+import java.util.Calendar;
 
 public class ProjectsController {
 
@@ -28,34 +29,37 @@ public class ProjectsController {
     }
 
     public int Add(String projectName, String projectDescription, Duration hours, String suggesterName, String suggesterMail, String suggesterPhone, String suggesterCompany) {
-        var id = -1;
-        if (DB.getInstance().projects.size() == 0) {
-            id = 1;
-        } else {
-            var max = DB.getInstance().projects.stream().map(Project::getId).max(Integer::compareTo);
-            id = max.get() + 1;
-        }
+        if (!loginController.isLogin(suggesterMail)) throw new UserNotConnectedException();
 
-        var company = new Company(suggesterCompany);
+        var sameNameSuggesterYear = DB.getInstance().getProjectsByName(projectName)
+                .filter(project ->
+                        project.getSuggester().getMail().equals(suggesterMail) || project.getSuggester().getCompany().getName().equals(suggesterCompany))
+                .anyMatch(project -> project.getCreationDate().get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR));
+        if (sameNameSuggesterYear) throw new IllegalArgumentException("Same name suggester year");
+
+        var company = suggesterCompany == null ? null : new Company(suggesterCompany);
         var suggester = new Suggester(suggesterName, suggesterMail, suggesterPhone, company);
         var project = new Project(projectName, projectDescription, hours, suggester);
-        DB.getInstance().addProject(project);
-        return id;
+        return DB.getInstance().addProject(project);
     }
 
     public Project.Status GetStatus(int id) {
-        var first = DB.getInstance().projects.stream().filter(project -> project.getId() == id).findFirst();
-        if (first.isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        return first.get().getStatus();
+        return DB.getInstance().getProjectById(id).getStatus();
     }
 
     public void UpdateStatus(int id, Project.Status status) {
-        var first = DB.getInstance().projects.stream().filter(project -> project.getId() == id).findFirst();
-        if (first.isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        first.get().setStatus(status);
+        DB.getInstance().getProjectById(id).setStatus(status);
+    }
+
+    public Calendar GetCreationDate(int id) {
+        return DB.getInstance().getProjectById(id).getCreationDate();
+    }
+
+    public Suggester GetSuggesterForProject(int projectId) {
+        return DB.getInstance().getProjectById(projectId).getSuggester();
+    }
+
+    public String GetProjectName(int id) {
+        return DB.getInstance().getProjectById(id).getProjectName();
     }
 }
