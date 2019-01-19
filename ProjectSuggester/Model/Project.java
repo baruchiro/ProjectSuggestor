@@ -4,6 +4,7 @@ import ProjectSuggester.Validators;
 
 import java.time.Duration;
 import java.util.Calendar;
+import java.util.UUID;
 
 
 public class Project implements Model {
@@ -14,6 +15,9 @@ public class Project implements Model {
     private int id;
     private Status status;
     private Calendar creationDate;
+    private String[] students;
+    private String mentor;
+    private java.util.UUID UUID;
 
     public Project(String projectName, String projectDescription, Duration hours, Suggester suggester) {
         this.projectName = projectName;
@@ -81,6 +85,29 @@ public class Project implements Model {
         if (this.creationDate != null) throw new UnsupportedOperationException("creationDate is already set");
         Validators.Throw.NotFuture(creationDate);
         this.creationDate = creationDate;
+    }
+
+    public void setStudents(String[] students) {
+        if (this.students != null && this.students != students) throw new IllegalArgumentException();
+        this.students = students;
+    }
+
+    public String getMentor() {
+        return mentor;
+    }
+
+    public void setMentor(String mentor) {
+        if (this.mentor != null && !this.mentor.equals(mentor))
+            throw new IllegalArgumentException("Mentor already set");
+        this.mentor = mentor;
+    }
+
+    public UUID getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(UUID uuid) {
+        this.UUID = uuid;
     }
 
     public enum Status {Reject, InCheck}

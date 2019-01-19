@@ -8,6 +8,7 @@ import ProjectSuggester.Model.Suggester;
 
 import java.time.Duration;
 import java.util.Calendar;
+import java.util.UUID;
 
 public class ProjectsController {
 
@@ -61,5 +62,22 @@ public class ProjectsController {
 
     public String GetProjectName(int id) {
         return DB.getInstance().getProjectById(id).getProjectName();
+    }
+
+    public UUID Register(int projectId, String mentorName, String... students) {
+        if (students.length < 2) throw new IllegalArgumentException("Must 2 students or more");
+        if (!loginController.isLogin(students[0])) throw new UserNotConnectedException();
+
+
+        var project = DB.getInstance().getProjectById(projectId);
+        project.setStudents(students);
+        project.setMentor(mentorName);
+        var uuid = UUID.randomUUID();
+        project.setUUID(uuid);
+        return uuid;
+    }
+
+    public void RegisterMentor(int projectId, String mentorName) {
+        DB.getInstance().getProjectById(projectId).setMentor(mentorName);
     }
 }

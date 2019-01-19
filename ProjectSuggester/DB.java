@@ -4,10 +4,7 @@ import ProjectSuggester.Model.Model;
 import ProjectSuggester.Model.Project;
 import ProjectSuggester.Model.User;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class DB {

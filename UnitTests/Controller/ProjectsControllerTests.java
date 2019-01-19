@@ -5,9 +5,11 @@ import ProjectSuggester.Controllers.ProjectsController;
 import ProjectSuggester.Exceptions.UserNotConnectedException;
 import ProjectSuggester.Model.Project;
 import UnitTests.ProjectBuilder;
+import com.github.javafaker.Faker;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
@@ -154,9 +156,124 @@ public class ProjectsControllerTests {
                     suggester.getCompany().getName()
             );
             fail("This should fail");
-        }catch (IllegalArgumentException ignored){
+        } catch (IllegalArgumentException ignored) {
         }
+    }
+
+    @Test
+    public void RegisterToProject_StudentsAndMentor() {
+        // Init
+        var projectId = AddProject();
 
 
+        // Validate
+        Faker faker = new Faker(Locale.forLanguageTag("he"));
+
+        var registrationID = ProjectsController.Register(
+                projectId,
+                faker.name().fullName(),
+                faker.idNumber().valid(),
+                faker.idNumber().valid()
+        );
+        assertNotNull(registrationID);
+    }
+
+    @Test
+    public void Register_UserNotConnected_ThrowException() {
+        // Init
+        var projectId = AddProject();
+
+        var loginController = mock(LoginController.class);
+        when(loginController.isLogin(anyString())).thenReturn(false);
+
+        var projectController = new ProjectsController(loginController);
+
+        // Validate
+        try {
+            Faker faker = new Faker(Locale.forLanguageTag("he"));
+
+            projectController.Register(
+                    projectId,
+                    faker.name().fullName(),
+                    faker.idNumber().valid(),
+                    faker.idNumber().valid()
+            );
+            fail("Should throw UserNotConnected");
+        } catch (UserNotConnectedException  ignored) {
+        }
+    }
+
+    @Test
+    public void Register_OneStudent_ShouldFail(){
+        var projectId = AddProject();
+
+        try {
+            Faker faker = new Faker(Locale.forLanguageTag("he"));
+
+            ProjectsController.Register(
+                    projectId,
+                    faker.name().fullName(),
+                    faker.idNumber().valid()
+            );
+            fail("Should throw UserNotConnected");
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    @Test
+    public void Register_MentorAlreadyRegisterToProject_ShouldFail(){
+        // init
+        Faker faker = new Faker(Locale.forLanguageTag("he"));
+
+        var mentorName = faker.name().fullName();
+        var projectId = AddProject();
+        ProjectsController.RegisterMentor(projectId, mentorName);
+
+        ProjectsController.Register(
+                projectId,
+                mentorName,
+                faker.idNumber().valid(),
+                faker.idNumber().valid()
+        );
+
+        try {
+
+            ProjectsController.Register(
+                    projectId,
+                    mentorName + faker.name().fullName(),
+                    faker.idNumber().valid(),
+                    faker.idNumber().valid()
+            );
+            fail("Should throw UserNotConnected");
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    @Test
+    public void Register_StudentsAlreadyRegistered_ShouldFail(){
+        Faker faker = new Faker(Locale.forLanguageTag("he"));
+
+        var projectId = AddProject();
+        var mentorName = faker.name().fullName();
+
+
+        ProjectsController.Register(
+                projectId,
+                mentorName,
+                faker.idNumber().valid(),
+                faker.idNumber().valid()
+        );
+
+        try {
+
+            ProjectsController.Register(
+                    projectId,
+                    mentorName,
+                    faker.idNumber().valid(),
+                    faker.idNumber().valid()
+            );
+            fail("Should fail");
+        } catch (IllegalArgumentException ignored) {
+        }
     }
 }
