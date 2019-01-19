@@ -7,7 +7,7 @@ public class Suggester extends User {
     private final String phone;
 
     public Suggester(String suggesterName, String mail, String suggesterPhone, Company company) {
-        super(mail);
+        super(mail, password);
         this.suggesterName = suggesterName;
 
         this.phone = suggesterPhone;

@@ -4,11 +4,13 @@ import ProjectSuggester.Validators;
 
 public class User implements Model {
     private final String mail;
+    private final String password;
     private int id;
     private boolean connected;
 
-    public User(String mail){
+    public User(String mail, String password){
         this.mail = mail;
+        this.password = password;
         this.id = -1;
     }
 
